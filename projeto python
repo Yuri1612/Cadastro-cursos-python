@@ -1,0 +1,151 @@
+import json
+import os
+import difflib
+
+# Nome do arquivo onde os dados serão salvos
+ARQUIVO_DADOS = 'dados.json'
+
+# Lista de cursos com nome e link
+cursos_disponiveis = [
+    {
+        "nome": "Pensamento Computacional – Fundação Bradesco",
+        "link": "https://www.ev.org.br/cursos/pensamento-computacional"
+    },
+    {
+        "nome": "Minicurso de Pensamento Lógico – Pensar Cursos",
+        "link": "https://www.pensarcursos.com.br/curso/minicurso-pensamento-logico-computacional"
+    },
+    {
+        "nome": "Curso de Pensamento Computacional – Portal IDEA",
+        "link": "https://portalidea.com.br/curso-gratuito-pensamento-computacional"
+    },
+    {
+        "nome": "Segurança em TI – Fundação Bradesco",
+        "link": "https://www.ev.org.br/cursos/seguranca-em-tecnologia-da-informacao"
+    },
+    {
+        "nome": "Segurança Digital – FGV",
+        "link": "https://educacao-executiva.fgv.br/cursos/online/curta-media-duracao-online/seguranca-digital"
+    },
+    {
+        "nome": "Segurança da Informação – Escola Virtual Gov",
+        "link": "https://www.escolavirtual.gov.br/curso/1256"
+    },
+    {
+        "nome": "Python Básico – Fundação Bradesco",
+        "link": "https://www.ev.org.br/cursos/linguagem-de-programacao-python-basico"
+    },
+    {
+        "nome": "Curso de Python – Realizzare Cursos",
+        "link": "https://www.realizzarecursos.com.br/cursos/curso-de-python/"
+    },
+    {
+        "nome": "Python para Iniciantes – Didática Tech",
+        "link": "https://didatica.tech/curso-de-python-online-para-iniciantes/"
+    }
+]
+
+
+# Função para carregar os dados do arquivo
+
+def carregar_dados():
+    if os.path.exists(ARQUIVO_DADOS):
+        with open(ARQUIVO_DADOS, 'r') as f:
+            return json.load(f)
+    return []
+
+# Função para salvar os dados no arquivo
+
+def salvar_dados(dados):
+    with open(ARQUIVO_DADOS, 'w') as f:
+        json.dump(dados, f, indent=4)
+
+# Função para validar o nome
+
+def obter_nome():
+    while True:
+        nome = input("Digite o nome: ").strip()
+        if len(nome) < 2 or not nome.isalpha():
+            print("Nome inválido. Tente novamente.")
+            continue
+        confirmacao = input(f"Você digitou '{nome}'. Está correto? (s/n): ").strip().lower()
+        if confirmacao == 's':
+            return nome
+
+# Função para exibir e escolher curso
+
+def escolher_curso():
+    print("\n--- Cursos Disponíveis ---")
+    for i, curso in enumerate(cursos_disponiveis, start=1):
+        print(f"{i}. {curso['nome']}")
+    while True:
+        try:
+            escolha = int(input("\nEscolha o número do curso desejado: "))
+            if 1 <= escolha <= len(cursos_disponiveis):
+                return cursos_disponiveis[escolha - 1]
+            else:
+                print("Número inválido. Tente novamente.")
+        except ValueError:
+            print("Por favor, insira um número válido.")
+
+# Função para adicionar um novo registro
+
+def adicionar_registro():
+    nome = obter_nome()
+
+    while True:
+        idade = input("Digite a idade: ").strip()
+        if not idade.isdigit():
+            print("Idade inválida. Por favor, insira apenas números.")
+        else:
+            break
+
+    curso = escolher_curso()
+
+    registro = {
+        "nome": nome,
+        "idade": idade,
+        "curso": curso["nome"],
+        "link_curso": curso["link"]
+    }
+
+    dados = carregar_dados()
+    dados.append(registro)
+    salvar_dados(dados)
+    print("\nRegistro salvo com sucesso!")
+    print(f"Link do curso: {curso['link']}")
+
+# Função para consultar registros
+
+def consultar_registros():
+    dados = carregar_dados()
+    if not dados:
+        print("Nenhum dado encontrado.")
+    else:
+        for i, registro in enumerate(dados, start=1):
+            print(f"{i}. Nome: {registro['nome']}, Idade: {registro['idade']}, Curso: {registro['curso']}")
+            print(f"    Link: {registro['link_curso']}")
+
+# Menu principal
+
+def menu():
+    while True:
+        print("\n--- Menu ---")
+        print("1. Adicionar novo registro")
+        print("2. Consultar registros")
+        print("3. Sair")
+
+        opcao = input("\nEscolha uma opção: ").strip()
+
+        if opcao == '1':
+            adicionar_registro()
+        elif opcao == '2':
+            consultar_registros()
+        elif opcao == '3':
+            print("Tchau Tchau :D !")
+            break
+        else:
+            print('Opção inválida. Tente novamente.')
+
+if __name__ == '__main__':
+    menu()
